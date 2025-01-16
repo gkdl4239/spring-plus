@@ -20,16 +20,13 @@ public class Log {
 
     private Long userId;
 
-    private String methodName;
-
     @Lob
     private String message;
 
     private LocalDateTime timestamp;
 
-    public Log(Long userId, String methodName, String message, LocalDateTime timestamp) {
+    public Log(Long userId, String message, LocalDateTime timestamp) {
         this.userId = userId;
-        this.methodName = methodName;
         this.message = message;
         this.timestamp = timestamp;
     }
