@@ -7,6 +7,7 @@ import org.example.expert.domain.common.dto.AuthUser;
 import org.example.expert.domain.common.exception.InvalidRequestException;
 import org.example.expert.domain.manager.entity.Manager;
 import org.example.expert.domain.todo.dto.request.TodoSaveRequest;
+import org.example.expert.domain.todo.dto.response.TodoFilterResponse;
 import org.example.expert.domain.todo.dto.response.TodoResponse;
 import org.example.expert.domain.todo.dto.response.TodoSaveResponse;
 import org.example.expert.domain.todo.entity.Todo;
@@ -98,5 +99,26 @@ public class TodoService {
             todo.getCreatedAt(),
             todo.getModifiedAt()
         );
+    }
+
+    public Page<TodoFilterResponse> getTodosByFilter(
+        int page,
+        int size,
+        String title,
+        String managerName,
+        String startDate,
+        String endDate) {
+
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+        LocalDateTime start = startDate != null ? LocalDateTime.parse(startDate) : null;
+        LocalDateTime end = endDate != null ? LocalDateTime.parse(endDate) : null;
+
+        return todoRepository.findAllByFilter(
+            title,
+            managerName,
+            start,
+            end,
+            pageable);
     }
 }
