@@ -8,26 +8,29 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.example.expert.domain.common.dto.AuthUser;
+import org.example.expert.domain.manager.service.LogService;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-@Slf4j
+
 @Aspect
+@Slf4j
 @Component
 @RequiredArgsConstructor
-public class AdminAccessLoggingAspect {
+public class ManagerRegistrationLoggingAspect {
 
     private final HttpServletRequest request;
+    private final LogService logService;
 
-    @Before("execution(* org.example.expert.domain.user.controller.UserAdminController.changeUserRole(..))")
-    public void logAfterChangeUserRole(JoinPoint joinPoint) {
+    @Before("execution(* org.example.expert.domain.manager.controller.ManagerController.saveManager(..))")
+    public void logBeforeRequest(JoinPoint joinPoint) {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         AuthUser authUser = (AuthUser) principal;
         Long userId = authUser.getId();
-        String requestUrl = request.getRequestURI();
+        String methodName = joinPoint.getSignature().toShortString();
+        String message = "매니저 등록 요청";
         LocalDateTime requestTime = LocalDateTime.now();
 
-        log.info("Admin Access Log - User ID: {}, Request Time: {}, Request URL: {}, Method: {}",
-            userId, requestTime, requestUrl, joinPoint.getSignature().getName());
+        logService.saveLog(userId, methodName, message, requestTime);
     }
 }
