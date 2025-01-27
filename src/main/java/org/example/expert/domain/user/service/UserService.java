@@ -1,5 +1,8 @@
 package org.example.expert.domain.user.service;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.example.expert.config.PasswordEncoder;
 import org.example.expert.domain.common.exception.InvalidRequestException;
@@ -17,6 +20,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ElasticSearchService elasticSearchService;
 
     public UserResponse getUser(long userId) {
         User user = userRepository.findById(userId)
@@ -50,5 +54,29 @@ public class UserService {
             !userChangePasswordRequest.getNewPassword().matches(".*[A-Z].*")) {
             throw new InvalidRequestException("새 비밀번호는 8자 이상이어야 하고, 숫자와 대문자를 포함해야 합니다.");
         }
+    }
+
+    public List<UserResponse> getUsersByName(String nickname) {
+        List<User> users = userRepository.findByNickname(nickname);
+
+        return users.stream().map(user -> new UserResponse(
+                user.getId(),
+                user.getEmail(),
+                user.getNickname()))
+            .toList();
+    }
+
+    public List<UserResponse> fullTextSearch(String nickname) {
+        List<User> users = userRepository.fullTextSearch(nickname);
+
+        return users.stream().map(user -> new UserResponse(
+                user.getId(),
+                user.getEmail(),
+                user.getNickname()))
+            .toList();
+    }
+
+    public List<Map<String, Object>> searchByNicknameElastic(String nickname) throws IOException {
+        return elasticSearchService.searchByNickname(nickname);
     }
 }
