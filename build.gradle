@@ -52,6 +52,15 @@ dependencies {
 
     // SpringSecurity
     implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // AWS
+    implementation 'software.amazon.awssdk:s3:2.20.20'
+
+    // ElasticSearch
+    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+    implementation 'org.elasticsearch.client:elasticsearch-rest-client:8.13.4'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+
 }
 
 clean { delete file('src/main/generated') }
